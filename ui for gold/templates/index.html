@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Price Prediction</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 5px;
+            display: block;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #28a745;
+        }
+        .error {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gold Price Prediction</h1>
+        
+        <form id="prediction-form">
+            <div class="input-group">
+                <label for="spx">SPX Value</label>
+                <input type="text" id="spx" placeholder="Enter SPX Value" required>
+            </div>
+
+            <div class="input-group">
+                <label for="uso">USO Value</label>
+                <input type="text" id="uso" placeholder="Enter USO Value" required>
+            </div>
+
+            <div class="input-group">
+                <label for="slv">SLV Value</label>
+                <input type="text" id="slv" placeholder="Enter SLV Value" required>
+            </div>
+
+            <div class="input-group">
+                <label for="eurusd">EUR/USD Value</label>
+                <input type="text" id="eurusd" placeholder="Enter EUR/USD Value" required>
+            </div>
+
+            <div class="input-group">
+                <label for="gld_lag1">GLD Lag 1</label>
+                <input type="text" id="gld_lag1" placeholder="Enter GLD Lag 1" required>
+            </div>
+
+            <div class="input-group">
+                <label for="gld_lag2">GLD Lag 2</label>
+                <input type="text" id="gld_lag2" placeholder="Enter GLD Lag 2" required>
+            </div>
+
+            <div class="input-group">
+                <label for="gld_lag3">GLD Lag 3</label>
+                <input type="text" id="gld_lag3" placeholder="Enter GLD Lag 3" required>
+            </div>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        <div class="result">
+            Predicted Price: <span id="predicted-price"></span>
+        </div>
+
+        <div class="error" id="error-message"></div>
+    </div>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Collect input values
+            const spx = parseFloat(document.getElementById('spx').value);
+            const uso = parseFloat(document.getElementById('uso').value);
+            const slv = parseFloat(document.getElementById('slv').value);
+            const eurusd = parseFloat(document.getElementById('eurusd').value);
+            const gld_lag1 = parseFloat(document.getElementById('gld_lag1').value);
+            const gld_lag2 = parseFloat(document.getElementById('gld_lag2').value);
+            const gld_lag3 = parseFloat(document.getElementById('gld_lag3').value);
+
+            const inputData = {
+                spx: spx,
+                uso: uso,
+                slv: slv,
+                eurusd: eurusd,
+                gld_lag1: gld_lag1,
+                gld_lag2: gld_lag2,
+                gld_lag3: gld_lag3
+            };
+
+            // Send the data to the backend API for prediction
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(inputData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.predicted_price) {
+                    document.getElementById('predicted-price').textContent = data.predicted_price.toFixed(2);
+                } else if (data.error) {
+                    document.getElementById('error-message').textContent = "Error: " + data.error;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('error-message').textContent = 'An error occurred. Please try again.';
+            });
+        });
+    </script>
+</body>
+</html>
